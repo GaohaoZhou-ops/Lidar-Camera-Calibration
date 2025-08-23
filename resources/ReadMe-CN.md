@@ -16,6 +16,7 @@
 
 我们在以下软硬件设备上展开了实验，如何你的软硬件环境与我们的不一致，那么建议跟随该 ReadMe 文件进行修改，并将与自己版本相关的部分进行替换。
 
+
 【注意】：如果你的设备是 Jetson 系列且使用了 Noetic 则几乎不用改动；
 
 |Device|OS|ROS|
@@ -49,13 +50,11 @@ $ sudo apt-get install libeigen3-dev libpcl-dev
 
 # 3. 拉取源码并编译
 
-由于需要编译 OpenCV 4.2.0 版本源码，并且需要用到 Livox 与 Realsense 的 ROS 驱动，我们这个仓库的组织形式是作为一个完成的工程设计的，以 git submodules 方式添加了
+由于需要编译 OpenCV 4.2.0 版本源码，并且需要用到 Livox 与 Realsense 的 ROS 驱动，我们将这个仓库的组织形式作为一个完成的工程，并以 git submodules 方式添加了所需的第三方仓库。
 
 ## 3.1 拉取源码
 
-### 方式一：使用我们修改后的仓库
-
-我们对源码的多处地方进行了修改，为了避免整个仓库过于庞大，同时减少切换子模块分支，你可以直接拉取我们修改后的完整源码：
+需要注意的是，你不应该在一个现有的 ros 工作空间的 `src` 目录下拉取这个仓库，而是应该将这个仓库作为一个单独的工程，如果后期需要进行合并，那么你可能需要自行解决一些同名包的冲突问题。
 
 ```bash
 $ git clone https://github.com/GaohaoZhou-ops/Lidar-Camera-Calibration.git

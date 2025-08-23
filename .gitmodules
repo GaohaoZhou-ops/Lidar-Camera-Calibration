@@ -13,3 +13,10 @@
 	path = third_party/opencv-contrib-4.2.0
 	url = https://github.com/opencv/opencv_contrib.git
 	branch = 4.x/4.2.0
+[submodule "calib_ws/src/realsense-ros"]
+	path = calib_ws/src/realsense-ros
+	url = https://github.com/IntelRealSense/realsense-ros.git
+	branch = ros1-legacy
+[submodule "calib_ws/src/livox_ros_driver2"]
+	path = calib_ws/src/livox_ros_driver2
+	url = https://github.com/Livox-SDK/livox_ros_driver2.git
