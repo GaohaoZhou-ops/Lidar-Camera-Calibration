@@ -54,66 +54,105 @@ $ sudo apt-get install libeigen3-dev libpcl-dev
 
 ## 3.1 拉取源码
 
-需要注意的是，你不应该在一个现有的 ros 工作空间的 `src` 目录下拉取这个仓库，而是应该将这个仓库作为一个单独的工程，如果后期需要进行合并，那么你可能需要自行解决一些同名包的冲突问题。
+需要注意的是，你不应该在一个现有的 ros 工作空间的 `src` 目录下拉取这个仓库，而是应该将这个仓库作为一个单独的工程。如果后期需要进行合并，那么你可能需要自行解决一些同名包的冲突问题。
 
 ```bash
 $ git clone https://github.com/GaohaoZhou-ops/Lidar-Camera-Calibration.git
 ```
 
-在拉取完源码后你需要额外修改一处位置：
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 方式二：逐个拉取源码并修改
-
-## 3.1 拉取 livox_camera_calib 源码
-创建一个工作空间 `calib_ws` 拉取源码：
+拉取完仓库后使用下面的命令初始化 `lidar_camera_calib` 和 `opencv` 子模块：
 
 ```bash
-$ mkdir -p calib_ws/src
-$ cd calib_ws/src
-$ git clone https://github.com/hku-mars/livox_camera_calib.git
+$ cd Lidar-Camera-Calibration
+$ git submodule update --init calib_ws/src/lidar_camera_calib/
+$ git submodule update --init third_party/opencv-4.2.0/
+$ git submodule update --init third_party/opencv-contrib-4.2.0/
+$ git submodule update --init third_party/vision_opencv/
 ```
-## 3.2 拉取 cv_bridge 源码
-回到工作空间  `calib_ws` 拉取源码，但不要着急放在 `src` 目录下，我们只需要这个仓库中的 `cv_bridge` 部分：
+
+切换分支，对于 opencv 使用 `4.2.0` 版本，对于 vision_opencv 使用 `noetic` 版本：
 
 ```bash
-$ cd calib_ws
-$ git clone https://github.com/ros-perception/vision_opencv.git
-$ cd vision_opencv
-$ git checkout noetic		# 根据自己ROS版本实际情况切换分支
+$ cd Lidar-Camera-Calibration
+$ cd third_party/opencv-4.2.0/
+$ git checkout 4.2.0
+
+$ cd Lidar-Camera-Calibration
+$ cd third_party/opencv-contrib-4.2.0/
+$ git checkout 4.2.0
+
+$ cd Lidar-Camera-Calibration
+$ cd third_party/vision_opencv/
+$ git checkout noetic
 ```
 
-切换到正确的分支后将 `cv_bridge` 文件夹拷贝到 `calib_ws/src` 目录下
+拷贝 `vision_opencv/cv_bridge` 到 `calib_ws/src` 目录下：
 
 ```bash
-$ cd calib_ws
-$ cp -r calib_ws/vision_opencv/cv_bridge calib_ws/src
+$ cd Lidar-Camera-Calibration
+$ cp -r third_party/vision_opencv/cv_bridge calib_ws/src
 ```
 
-## 3.3 修改源码
-这里需要修改多处源码，修改顺序可以不同，有关如何在 Jetson 编译 CUDA 加速的 OpenCV 库可以参考我的那篇刷机博客中对应内容（但要注意需要编译 4.2.0 版本）或者这篇 Githuh 仓库 [ReadMe](https://github.com/GaohaoZhou-ops/JetsonSLAM/blob/main/fast_livo2_project/resources/ReadMe-CN.md) 文件中的 `"Step3. 编译 OpenCV 4.2.0"` 小节，但一定要注意：<font color=red>**编译完成后不能 sudo make install**</font>。
+这个工程中的 `livox_ros_driver2` 和 `realsense_ros` 子仓库根据自己需求进行拉取，如果你已经在其他工作空间已经编译了这两个仓库并且正在使用，那么可以跳过下面这部分：
+
+```bash
+$ cd Lidar-Camera-Calibration
+$ git submodule update --init calib_ws/src/livox_ros_driver2/
+$ git submodule update --init calib_ws/src/realsense-ros/
+```
+
+## 3.2 编译 OpenCV 4.2.0 
 
 经过实验发现 <font color=red>**OpenCV 4.5.4**</font> 无法使用，<font color=green>**OpenCV 4.2.0**</font> 版本可以使用。
 
-* `src/livox_camera_calib/CMakeLists.txt`：
+```bash
+$ cd Lidar-Camera-Calibration
+$ cd third_party/opencv-4.2.0/
+$ mkdir build && cd build
+```
 
+使用下面命令编译之前需要确认自己 Jetson 设备的算力信息：
+
+* Nvidia 算力查看：[https://developer.nvidia.com/cuda-gpus#collapseOne](https://developer.nvidia.com/cuda-gpus#collapseOne)
+
+![nvidia_collapse](./images/nvidia_collapse.png)
+
+修改下面中 `DCUDA_ARCH_BIN` 和 `DCUDA_ARCH_PTX` 后面的字段以充分利用 CUDA 加速：
+
+```bash
+$ cmake \
+-DCMAKE_BUILD_TYPE=Release \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
+-DOPENCV_ENABLE_NONFREE=1 \
+-DBUILD_opencv_python2=1 \
+-DBUILD_opencv_python3=1 \
+-DWITH_FFMPEG=1 \
+-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+-DCUDA_ARCH_BIN=8.7 \		# Jetson 算力号
+-DCUDA_ARCH_PTX=8.7 \		# Jetson 算力号
+-DWITH_CUDA=1 \
+-DENABLE_FAST_MATH=1 \
+-DCUDA_FAST_MATH=1 \
+-DWITH_CUBLAS=1 \
+-DOPENCV_GENERATE_PKGCONFIG=1 \
+-DOPENCV_EXTRA_MODULES_PATH=../opencv-contrib-4.2.0/modules \
+..
+```
+
+然后使用下面的命令进行编译，这个过程在 Orin DK 上大约需要 20 分钟，一定要注意：<font color=red>**编译完成后不能 sudo make install**</font>：
+
+```bash
+$ make -j${nproc}
+```
+
+## 3.3 修改源码
+这里需要修改 <font color=blue>**4**</font> 处源码，修改顺序可以不同，但要注意下面涉及到的绝对路径需要替换成自己的。
+
+* `calib_ws/src/livox_camera_calib/CMakeLists.txt`：
 
 ```cmake
 # 1. 设置 OpenCV 4.2.0 路径
-set(OpenCV_DIR "/home/orin/Desktop/JetsonSLAM/third_party/opencv-4.2.0/build")	
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")	
 # 2. 添加CUDA工具库
 find_package(CUDAToolkit REQUIRED)			
 
@@ -126,34 +165,47 @@ find_package(Ceres 2.2 REQUIRED)			# find_package(Ceres REQUIRED)
 ```
 
 
-* `src/cv_bridge/CMakeLists.txt`：
+* `calib_ws/src/cv_bridge/CMakeLists.txt`：
 ```cmake
-set(OpenCV_DIR "/home/orin/Desktop/JetsonSLAM/third_party/opencv-4.2.0/build")
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")
 find_package(OpenCV 4.2.0 QUIET)
 # set(_opencv_version 4)
 # find_package(OpenCV 4 QUIET)
 ```
 
-* `src/livox_camera_calib/src/lidar_camera_calib.cpp`
+* `calib_ws/src/livox_camera_calib/src/lidar_camera_calib.cpp`
 ```cpp
 // ceres::LocalParameterization *q_parameterization = 
 //			new ceres::EigenQuaternionParameterization();
 ceres::Manifold *q_parameterization = new ceres::EigenQuaternionManifold();
 ```
 
-* `src/livox_camera_calib/src/lidar_camera_multi_calib.cpp`
+* `calib_ws/src/livox_camera_calib/src/lidar_camera_multi_calib.cpp`
 ```cpp
 // ceres::LocalParameterization *q_parameterization = 
 //			new ceres::EigenQuaternionParameterization();
 ceres::Manifold *q_parameterization = new ceres::EigenQuaternionManifold();
+```
+
+完成上面源码修改后我们也提供了一个将 Livox 原始点云进行 crop box 的脚本，目的是在采集 rosbag 包的时候能够减少点云范围，避免后面 PNP 解算消耗过大，通过 launch 文件限定 XYZ 的范围。
+
+```bash
+$ cd Lidar-Camera-Calibration
+$ mkdir calib_ws/src/lidar_camera_calib/scripts
+$ cp resources/source_code/pointcloud_filter.py calib_ws/src/lidar_camera_calib/scripts
+
+$ cp resources/source_code/filter.launch calib_ws/src/lidar_camera_calib/launch
+
+$ chmod 777 calib_ws/src/lidar_camera_calib/scripts/*
 ```
 
 ## 3.4 编译工程
 修改完上面的源码内容后就可以编译整个工程了，如果你已经激活了 conda 环境并且没有做额外配置，那么建议先退出 conda 环境。
 
 ```bash
-$ conda deactivate
+$ cd Lidar-Camera-Calibration
 $ cd calib_ws
+$ conda deactivate
 $ catkin_make
 ```
 
@@ -330,7 +382,7 @@ push enter to publish again
 
 ![calib_result](./images/calib_result.png)
 
-标定结果会保存到 `src/livox_camera_calib/result/extrinsic.txt` 文件中：
+标定结果会保存到 `calib_ws/src/livox_camera_calib/result/extrinsic.txt` 文件中：
 ```txt
 -0.00265775,-0.999901,-0.0138502,0.0146354
 -0.00333279,0.013859,-0.999898,0.0573609
@@ -347,64 +399,21 @@ push enter to publish again
 3. 并且<font color=red>**尺度越大**</font>越好；
 4. 雷达与相机最好 <font color=red>**正对**</font> 物体；
 
-### 4.3.1 启动雷达
-
-假设你已经编译好了 Livox Mid360 雷达的工作空间名为 `livox_ws`，并且配置好了雷达与本的 IP 地址文件 `livox_ws/src/livox_ros_driver2/config/MID360_config.json`，雷达的 IP 地址可以从设备盒子上拿到，也可以直接看雷达背面序列号的后两位，如 74 则地址为 `192.168.1.174`；如果你这些条件都不满足则只能通过 Livox-Viewer 查看或修改了：
-
-```json
-{
-  "lidar_summary_info" : {
-    "lidar_type": 8
-  },
-  "MID360": {
-    "lidar_net_info" : {
-      "cmd_data_port": 56100,
-      "push_msg_port": 56200,
-      "point_data_port": 56300,
-      "imu_data_port": 56400,
-      "log_data_port": 56500
-    },
-    "host_net_info" : {
-      "cmd_data_ip" : "192.168.1.110",		// 本机的IP地址
-      "cmd_data_port": 56101,
-      "push_msg_ip": "192.168.1.110",
-      "push_msg_port": 56201,
-      "point_data_ip": "192.168.1.110",
-      "point_data_port": 56301,
-      "imu_data_ip" : "192.168.1.110",
-      "imu_data_port": 56401,
-      "log_data_ip" : "",
-      "log_data_port": 56501
-    }
-  },
-  "lidar_configs" : [
-    {
-      "ip" : "192.168.1.174",				// 雷达的IP地址
-      "pcl_data_type" : 1,
-      "pattern_mode" : 0,
-      "extrinsic_parameter" : {
-        "roll": 0.0,
-        "pitch": 0.0,
-        "yaw": 0.0,
-        "x": 0,
-        "y": 0,
-        "z": 0
-      }
-    }
-  ]
-}
-```
-
-进入工作空间后启动雷达，启动后你可以在 rviz 界面找找到雷达话题并将参数 `Deacy Time` 设置为 `1` 表示显示 1s 的累积点云，因为 Mid360 是非重复式扫描，如果只看实时点云的话不是很直观。
+由于 Mid360 在水平面上是 360 度，而标定工具解算是 PNP 问题，因此最好在计算的时候减少一些数据量以更好完成计算，最实用简单的方式就是订阅雷达点云话题并限定其 crop box。我们提供了一个节点脚本用来订阅原始点云话题并只保留一定角度内的点云。这一步是可选的，但我们实验发现如果限定了 crop box 的话标定效果会有一定提升
 
 ```bash
-$ cd livox_ws
+$ cd Lidar-Camera-Calibration
 $ source devel/setup.bash
-$ roslaunch livox_ros_driver2 rviz_MID360.launch
+$ roslaunch lidar_camera_calib filter.launch
 ```
-### 4.3.2 [可选] 限定点云范围
-由于 Mid360 在水平面上是 360 度，而标定工具解算是 PNP 问题，因此最好在计算的时候减少一些数据量以更好完成计算，我们提供了一个节点脚本用来订阅原始点云话题并只保留一定角度内的点云。
 
-【注意】：录制数据包的时候需要替换掉话题名；
+新建一个 rviz 可以看到修改后的点云：
 
+![croped_pcd](./images/croped_pcd.png)
+
+然后录制雷达点云与相机的数据包：
+
+```bash
+$ rosbag record -O calib.bag /filtered_points /camera/color/image_raw
+```
 

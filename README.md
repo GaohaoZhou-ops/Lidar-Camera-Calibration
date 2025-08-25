@@ -1,10 +1,5 @@
 # Lidar Camera Calibration
 
-【Note】：<font color=red>**我们正在重新整理仓库代码，预计 2025年08月25日 完成整理，在此之前建议暂停操作。当代码完成整理后你将不会再看到这条注释**</font>
-
-【Note】：<font color=red>**We are reorganizing the repository code and expect to complete the reorganization on August 25, 2025. It is recommended to suspend operations before then. You will no longer see this note after the code is reorganized**</font>
-
-
 We provide the following language versions of the ReadMe file to help you quickly familiarize yourself with this project. Click the hyperlink below to jump:
 
 我们提供了以下语言版本的 ReadMe 文件以帮助你快速熟悉这个工程，点击下方超链接进行跳转：
@@ -27,6 +22,7 @@ The hardware and testing facilities for this project were provided by the `Insti
 # News & Future Work
 
 ## News
+* 2025-08-25: Modify ReadMe files.
 * 2025-08-20: Init repo;
 
 ## TODO
