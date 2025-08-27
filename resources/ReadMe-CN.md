@@ -122,7 +122,7 @@ $ mkdir build && cd build
 ```bash
 $ cmake \
 -DCMAKE_BUILD_TYPE=Release \
--DCMAKE_INSTALL_PREFIX=/usr/local \
+-DCMAKE_INSTALL_PREFIX=../install \
 -DOPENCV_ENABLE_NONFREE=1 \
 -DBUILD_opencv_python2=1 \
 -DBUILD_opencv_python3=1 \
@@ -135,7 +135,7 @@ $ cmake \
 -DCUDA_FAST_MATH=1 \
 -DWITH_CUBLAS=1 \
 -DOPENCV_GENERATE_PKGCONFIG=1 \
--DOPENCV_EXTRA_MODULES_PATH=../opencv-contrib-4.2.0/modules \
+-DOPENCV_EXTRA_MODULES_PATH=../../opencv-contrib-4.2.0/modules \
 ..
 ```
 
@@ -152,7 +152,7 @@ $ make -j${nproc}
 
 ```cmake
 # 1. 设置 OpenCV 4.2.0 路径
-set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")	
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/install")	
 # 2. 添加CUDA工具库
 find_package(CUDAToolkit REQUIRED)			
 
@@ -167,7 +167,7 @@ find_package(Ceres 2.2 REQUIRED)			# find_package(Ceres REQUIRED)
 
 * `calib_ws/src/cv_bridge/CMakeLists.txt`：
 ```cmake
-set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/install")
 find_package(OpenCV 4.2.0 QUIET)
 # set(_opencv_version 4)
 # find_package(OpenCV 4 QUIET)

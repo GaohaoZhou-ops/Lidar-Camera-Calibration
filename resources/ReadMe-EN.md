@@ -120,7 +120,7 @@ Modify the fields after `DCUDA_ARCH_BIN` and `DCUDA_ARCH_PTX` below to take full
 ```bash
 $ cmake \
 -DCMAKE_BUILD_TYPE=Release \
--DCMAKE_INSTALL_PREFIX=/usr/local \
+-DCMAKE_INSTALL_PREFIX=../install \
 -DOPENCV_ENABLE_NONFREE=1 \
 -DBUILD_opencv_python2=1 \
 -DBUILD_opencv_python3=1 \
@@ -133,7 +133,7 @@ $ cmake \
 -DCUDA_FAST_MATH=1 \
 -DWITH_CUBLAS=1 \
 -DOPENCV_GENERATE_PKGCONFIG=1 \
--DOPENCV_EXTRA_MODULES_PATH=../opencv-contrib-4.2.0/modules \
+-DOPENCV_EXTRA_MODULES_PATH=../../opencv-contrib-4.2.0/modules \
 ..
 ```
 
@@ -151,7 +151,7 @@ Here, you need to modify the source code at <font color=blue>**4**</font> . The 
 ```cmake
 # 1. Set the OpenCV 4.2.0 path
 
-set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/install")
 # 2. Add the CUDA toolkit
 
 find_package(CUDAToolkit REQUIRED)
@@ -169,7 +169,7 @@ find_package(Ceres 2.2 REQUIRED) # find_package(Ceres REQUIRED)
 
 * `calib_ws/src/cv_bridge/CMakeLists.txt`:
 ```cmake
-set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/build")
+set(OpenCV_DIR "/home/orin/Desktop/Lidar-Camera-Calibration/third_party/opencv-4.2.0/install")
 find_package(OpenCV 4.2.0 QUIET)
 # set(_opencv_version 4)
 # find_package(OpenCV 4 QUIET)
