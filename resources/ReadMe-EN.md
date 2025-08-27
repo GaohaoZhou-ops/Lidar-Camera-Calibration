@@ -141,6 +141,7 @@ Then compile using the following command. This process takes about 20 minutes on
 
 ```bash
 $ make -j ${nproc}
+$ make install      # Do NOT use sudo make install
 ```
 
 ## 3.3 Modifying the Source Code

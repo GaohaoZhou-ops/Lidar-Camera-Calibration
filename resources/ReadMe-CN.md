@@ -143,6 +143,7 @@ $ cmake \
 
 ```bash
 $ make -j${nproc}
+$ make install      # 不要使用 sudo make install
 ```
 
 ## 3.3 修改源码
