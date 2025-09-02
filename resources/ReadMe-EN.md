@@ -402,21 +402,47 @@ This project requires a rosbag data package and an image captured by an RGB came
 3. The larger the scale, the better.
 4. The radar and camera should ideally be facing the object.
 
-Since Mid360 covers 360 degrees horizontally, and the calibration tool solves a point-in-none problem, it's best to reduce the amount of data during calculations to improve performance. The most practical and simple method is to subscribe to the radar point cloud topic and limit its crop box. We provide a node script that subscribes to the raw point cloud topic and only retains points within a certain angle. This step is optional, but we've found that limiting the crop box improves calibration.
+Because Mid360 covers a 360-degree horizontal plane and the calibration tool solves a point-in-none (PNP) problem, it's best to reduce the amount of data required for computation. The most practical and simple approach is to subscribe to the radar point cloud topic and limit its crop box. We provide a node script that subscribes to the raw point cloud topic and retains only points within a certain angle. This step is optional, but we've found that limiting the crop box improves calibration performance. Use the provided script to collect approximately 3 seconds of data:
 
 ```bash
-$ cd Lidar-Camera-Calibration
-$ source devel/setup.bash
-$ roslaunch livox_camera_calib filter.launch
+$ roslaunch livox_camera_calib collect_data.launch
 ```
 
-Create a new rviz file to view the modified point cloud:
-
-![croped_pcd](./images/croped_pcd.png)
-
-Then record the radar point cloud and camera data packets:
+If you receive the following error `undefined symbol: ffi_type_pointer` after running, execute the following command:
 
 ```bash
-$ rosbag record -O calib.bag /filtered_points /camera/color/image_raw
+$ conda install libffi==3.3
+$ pip install numpy==1.24.0
 ```
 
+The generated data will be saved in the `calib_ws/src/livox_camera_calib/output` directory:
+
+```bash
+.
+├── capture_20250902_210451.png
+└── capture_20250902_210453.pcd
+```
+
+Then modify the configuration file `calib_ws/src/livox_camera_calib/config/calib.yaml` to specify the file path, but pay special attention to the following: For the `calib/calib_config_file` parameter, use `config_indoor.yaml` for indoor use and `config_outdoor.yaml` for outdoor use:
+
+```yaml
+# Data path. Adjust them!
+common:
+image_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/output/capture_20250902_210451.png"
+pcd_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/output/capture_20250902_210453.pcd"
+result_file: "/home/orin/Desktop/Lidar-Camera-Calibration/offical_demo/extrinsic.txt"
+
+# Camera Parameters. Adjust them!
+camera: 
+camera_matrix: [1364.45, 0.0, 958.327, 
+0.0, 1366.46, 535.074, 
+0.0, 0.0, 1.0 ] 
+dist_coeffs: [0.0958277, -0.198233, -0.000147133, -0.000430056, 0.000000]
+
+# Calibration Parameters.!
+calib: 
+calib_config_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/config/config_indoor.yaml" 
+use_rough_calib: true # set true if your initial_extrinsic is bad
+```
+
+![self-data](./images/self-data.png)

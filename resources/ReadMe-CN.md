@@ -404,21 +404,47 @@ push enter to publish again
 3. 并且<font color=red>**尺度越大**</font>越好；
 4. 雷达与相机最好 <font color=red>**正对**</font> 物体；
 
-由于 Mid360 在水平面上是 360 度，而标定工具解算是 PNP 问题，因此最好在计算的时候减少一些数据量以更好完成计算，最实用简单的方式就是订阅雷达点云话题并限定其 crop box。我们提供了一个节点脚本用来订阅原始点云话题并只保留一定角度内的点云。这一步是可选的，但我们实验发现如果限定了 crop box 的话标定效果会有一定提升
-
-```bash
-$ cd Lidar-Camera-Calibration
-$ source devel/setup.bash
-$ roslaunch livox_camera_calib filter.launch
-```
-
-新建一个 rviz 可以看到修改后的点云：
-
-![croped_pcd](./images/croped_pcd.png)
-
-然后使用我们提供的脚本采集 3 秒左右的数据：
+由于 Mid360 在水平面上是 360 度，而标定工具解算是 PNP 问题，因此最好在计算的时候减少一些数据量以更好完成计算，最实用简单的方式就是订阅雷达点云话题并限定其 crop box。我们提供了一个节点脚本用来订阅原始点云话题并只保留一定角度内的点云。这一步是可选的，但我们实验发现如果限定了 crop box 的话标定效果会有一定提升。使用我们提供的脚本采集 3 秒左右的数据：
 
 ```bash
 $ roslaunch livox_camera_calib collect_data.launch
 ```
 
+如果你在运行后出现如下报错 `undefined symbol: ffi_type_pointer`，那么执行下面的命令：
+
+```bash
+$ conda install libffi==3.3
+$ pip install numpy==1.24.0
+```
+
+生成的数据将保存在 `calib_ws/src/livox_camera_calib/output` 目录下：
+
+```bash
+.
+├── capture_20250902_210451.png
+└── capture_20250902_210453.pcd
+```
+
+然后修改配置文件 `calib_ws/src/livox_camera_calib/config/calib.yaml` 指定文件路径，但需要特别注意 `calib/calib_config_file` 这个参数，如果你是室内则使用 `config_indoor.yaml`，室外则使用 `config_outdoor.yaml`：
+
+```yaml
+# Data path. adjust them!
+common:
+    image_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/output/capture_20250902_210451.png"
+    pcd_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/output/capture_20250902_210453.pcd"
+    result_file: "/home/orin/Desktop/Lidar-Camera-Calibration/offical_demo/extrinsic.txt"
+
+# Camera Parameters. Adjust them!
+camera:
+    camera_matrix: [1364.45, 0.0,      958.327,
+                0.0,     1366.46,  535.074,
+                0.0,     0.0,      1.0     ]
+    dist_coeffs: [0.0958277, -0.198233, -0.000147133, -0.000430056, 0.000000]
+
+# Calibration Parameters.!
+calib:
+    calib_config_file: "/home/orin/Desktop/Lidar-Camera-Calibration/calib_ws/src/livox_camera_calib/config/config_indoor.yaml"
+    use_rough_calib: true # set true if your initial_extrinsic is bad
+```
+
+![self-data](./images/self-data.png)
