@@ -60,11 +60,11 @@ $ sudo apt-get install libeigen3-dev libpcl-dev
 $ git clone https://github.com/GaohaoZhou-ops/Lidar-Camera-Calibration.git
 ```
 
-拉取完仓库后使用下面的命令初始化 `lidar_camera_calib` 和 `opencv` 子模块：
+拉取完仓库后使用下面的命令初始化 `livox_camera_calib` 和 `opencv` 子模块：
 
 ```bash
 $ cd Lidar-Camera-Calibration
-$ git submodule update --init calib_ws/src/lidar_camera_calib/
+$ git submodule update --init calib_ws/src/livox_camera_calib/
 $ git submodule update --init third_party/opencv-4.2.0/
 $ git submodule update --init third_party/opencv-contrib-4.2.0/
 $ git submodule update --init third_party/vision_opencv/
@@ -192,16 +192,16 @@ ceres::Manifold *q_parameterization = new ceres::EigenQuaternionManifold();
 
 ```bash
 $ cd Lidar-Camera-Calibration
-$ mkdir calib_ws/src/lidar_camera_calib/scripts
+$ mkdir calib_ws/src/livox_camera_calib/scripts
 ```
 
 拷贝文件 `collect_data.launch` 和 `collect_data.py`：
 ```bash
-$ cp resources/source_code/collect_data.py calib_ws/src/lidar_camera_calib/scripts
+$ cp resources/source_code/collect_data.py calib_ws/src/livox_camera_calib/scripts
 
-$ cp resources/source_code/collect_data.launch calib_ws/src/lidar_camera_calib/launch
+$ cp resources/source_code/collect_data.launch calib_ws/src/livox_camera_calib/launch
 
-$ chmod 777 calib_ws/src/lidar_camera_calib/scripts/*
+$ chmod 777 calib_ws/src/livox_camera_calib/scripts/*
 ```
 
 ## 3.4 编译工程
@@ -222,7 +222,7 @@ $ catkin_make
 /usr/bin/ld: warning: libopencv_features2d.so.4.5, needed by /home/orin/opencv-4.5.4/build/lib/libopencv_calib3d.so.4.5.4, may conflict with libopencv_features2d.so.4.2
 /usr/bin/ld: warning: libopencv_imgproc.so.4.2, needed by /home/orin/Desktop/calib_ws/libopencv_features2d.so.4.2, may conflict with libopencv_imgproc.so.4.5
 /usr/bin/ld: warning: libopencv_core.so.4.2, needed by /home/orin/Desktop/calib_ws/libopencv_features2d.so.4.2, may conflict with libopencv_core.so.4.5
-[100%] Built target lidar_camera_calib
+[100%] Built target livox_camera_calib
 /usr/bin/ld: warning: libopencv_features2d.so.4.5, needed by /home/orin/opencv-4.5.4/build/lib/libopencv_calib3d.so.4.5.4, may conflict with libopencv_features2d.so.4.2
 /usr/bin/ld: warning: libopencv_imgproc.so.4.2, needed by /home/orin/Desktop/calib_ws/libopencv_features2d.so.4.2, may conflict with libopencv_imgproc.so.4.5
 /usr/bin/ld: warning: libopencv_core.so.4.2, needed by /home/orin/Desktop/calib_ws/libopencv_features2d.so.4.2, may conflict with libopencv_core.so.4.5
@@ -409,7 +409,7 @@ push enter to publish again
 ```bash
 $ cd Lidar-Camera-Calibration
 $ source devel/setup.bash
-$ roslaunch lidar_camera_calib filter.launch
+$ roslaunch livox_camera_calib filter.launch
 ```
 
 新建一个 rviz 可以看到修改后的点云：
@@ -419,6 +419,6 @@ $ roslaunch lidar_camera_calib filter.launch
 然后使用我们提供的脚本采集 3 秒左右的数据：
 
 ```bash
-$ roslaunch lidar_camera_calib collect_data.launch
+$ roslaunch livox_camera_calib collect_data.launch
 ```
 

@@ -58,11 +58,11 @@ Note that you should not pull this repository into the `src` directory of an exi
 $ git clone https://github.com/GaohaoZhou-ops/Lidar-Camera-Calibration.git
 ```
 
-After pulling the repository, use the following command to initialize the `lidar_camera_calib` and `opencv` submodules:
+After pulling the repository, use the following command to initialize the `livox_camera_calib` and `opencv` submodules:
 
 ```bash
 $ cd Lidar-Camera-Calibration
-$ git submodule update --init calib_ws/src/lidar_camera_calib/
+$ git submodule update --init calib_ws/src/livox_camera_calib/
 $ git submodule update --init third_party/opencv-4.2.0/
 $ git submodule update --init third_party/opencv-contrib-4.2.0/
 $ git submodule update --init third_party/vision_opencv/
@@ -194,16 +194,16 @@ After completing the above source code modifications, we also provide a script f
 
 ```bash
 $ cd Lidar-Camera-Calibration
-$ mkdir calib_ws/src/lidar_camera_calib/scripts
+$ mkdir calib_ws/src/livox_camera_calib/scripts
 ```
 
 Copy `collect_data.launch` and `collect_data.py` files：
 ```bash
-$ cp resources/source_code/collect_data.py calib_ws/src/lidar_camera_calib/scripts
+$ cp resources/source_code/collect_data.py calib_ws/src/livox_camera_calib/scripts
 
-$ cp resources/source_code/collect_data.launch calib_ws/src/lidar_camera_calib/launch
+$ cp resources/source_code/collect_data.launch calib_ws/src/livox_camera_calib/launch
 
-$ chmod 777 calib_ws/src/lidar_camera_calib/scripts/*
+$ chmod 777 calib_ws/src/livox_camera_calib/scripts/*
 ```
 
 ## 3.4 Compiling the Project
@@ -407,7 +407,7 @@ Since Mid360 covers 360 degrees horizontally, and the calibration tool solves a 
 ```bash
 $ cd Lidar-Camera-Calibration
 $ source devel/setup.bash
-$ roslaunch lidar_camera_calib filter.launch
+$ roslaunch livox_camera_calib filter.launch
 ```
 
 Create a new rviz file to view the modified point cloud:
