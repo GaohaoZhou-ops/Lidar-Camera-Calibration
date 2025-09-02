@@ -195,9 +195,13 @@ After completing the above source code modifications, we also provide a script f
 ```bash
 $ cd Lidar-Camera-Calibration
 $ mkdir calib_ws/src/lidar_camera_calib/scripts
-$ cp resources/source_code/pointcloud_filter.py calib_ws/src/lidar_camera_calib/scripts
+```
 
-$ cp resources/source_code/filter.launch calib_ws/src/lidar_camera_calib/launch
+Copy `collect_data.launch` and `collect_data.py` files：
+```bash
+$ cp resources/source_code/collect_data.py calib_ws/src/lidar_camera_calib/scripts
+
+$ cp resources/source_code/collect_data.launch calib_ws/src/lidar_camera_calib/launch
 
 $ chmod 777 calib_ws/src/lidar_camera_calib/scripts/*
 ```

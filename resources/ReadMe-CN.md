@@ -193,9 +193,13 @@ ceres::Manifold *q_parameterization = new ceres::EigenQuaternionManifold();
 ```bash
 $ cd Lidar-Camera-Calibration
 $ mkdir calib_ws/src/lidar_camera_calib/scripts
-$ cp resources/source_code/pointcloud_filter.py calib_ws/src/lidar_camera_calib/scripts
+```
 
-$ cp resources/source_code/filter.launch calib_ws/src/lidar_camera_calib/launch
+拷贝文件 `collect_data.launch` 和 `collect_data.py`：
+```bash
+$ cp resources/source_code/collect_data.py calib_ws/src/lidar_camera_calib/scripts
+
+$ cp resources/source_code/collect_data.launch calib_ws/src/lidar_camera_calib/launch
 
 $ chmod 777 calib_ws/src/lidar_camera_calib/scripts/*
 ```
@@ -412,9 +416,9 @@ $ roslaunch lidar_camera_calib filter.launch
 
 ![croped_pcd](./images/croped_pcd.png)
 
-然后录制雷达点云与相机的数据包：
+然后使用我们提供的脚本采集 3 秒左右的数据：
 
 ```bash
-$ rosbag record -O calib.bag /filtered_points /camera/color/image_raw
+$ roslaunch lidar_camera_calib collect_data.launch
 ```
 

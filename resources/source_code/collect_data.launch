@@ -1,0 +1,17 @@
+<launch>
+    <node pkg="lidar_camera_calib" type="collect_data.py" name="pointcloud_capture_node" output="screen">
+        <param name="input_topic" value="/livox/lidar" />
+        <param name="output_topic" value="/filtered_points" />
+        <param name="x_min" value="0.5" />
+        <param name="x_max" value="5.0" />
+        <param name="z_min" value="-0.2" />
+        <param name="z_max" value="1.5" />
+        <param name="angle_min" value="-60.0" />
+        <param name="angle_max" value="60.0" />
+
+        <param name="enable_capture" value="true" /> 
+        <param name="collection_duration" value="10.0" />
+        <param name="image_topic" value="/camera/color/image_raw" /> 
+        <param name="output_dir" value="$(find lidar_camera_calib)/output" />
+    </node>
+</launch>
